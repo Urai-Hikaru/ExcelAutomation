@@ -1,0 +1,28 @@
+﻿<Application x:Class="ExcelAutomation.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:ExcelAutomation"
+             xmlns:vm="clr-namespace:ExcelAutomation.ViewModels" 
+             xmlns:v="clr-namespace:ExcelAutomation.Views"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" 
+                                             PrimaryColor="DeepPurple" 
+                                             SecondaryColor="Lime" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <DataTemplate DataType="{x:Type vm:DataProcessingViewModel}">
+                <v:DataProcessingView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type vm:BatchProcessingViewModel}">
+                <v:BatchProcessingView />
+            </DataTemplate>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

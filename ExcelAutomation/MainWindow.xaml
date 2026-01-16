@@ -1,0 +1,114 @@
+﻿<Window x:Class="ExcelAutomation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        Background="{DynamicResource MaterialDesignPaper}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <materialDesign:ColorZone Grid.Row="0" Grid.ColumnSpan="2" 
+                                  Mode="PrimaryMid" Padding="16" 
+                                  materialDesign:ElevationAssist.Elevation="Dp4">
+            <DockPanel>
+                <ToggleButton x:Name="MenuToggleButton" 
+                              IsChecked="False"
+                              Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
+                              DockPanel.Dock="Left" />
+
+                <TextBlock Text="ExcelAutomation" VerticalAlignment="Center" Margin="16,0,0,0" 
+                           FontSize="20" FontWeight="Bold" />
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                    <materialDesign:PackIcon Kind="Bell" VerticalAlignment="Center" Margin="0,0,15,0" 
+                                             Width="24" Height="24" ToolTip="更新通知" />
+                    <TextBlock Text="ログイン：管理者" VerticalAlignment="Center" Foreground="White" Margin="0,0,10,0"/>
+                    <materialDesign:PackIcon Kind="AccountCircle" Width="30" Height="30" VerticalAlignment="Center"/>
+                </StackPanel>
+            </DockPanel>
+        </materialDesign:ColorZone>
+
+        <Border Grid.Row="1" Grid.Column="0" 
+                Background="{DynamicResource MaterialDesignCardBackground}" 
+                BorderThickness="0,0,1,0" 
+                BorderBrush="#DDDDDD"
+                Width="250"
+                Visibility="{Binding ElementName=MenuToggleButton, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Margin="0,20,0,0">
+                <RadioButton Style="{StaticResource MaterialDesignTabRadioButton}" Margin="10,5"
+                             Content="データ処理実行" IsChecked="True"
+                             Command="{Binding NavigateCommand}" CommandParameter="DataProcessingView"/>
+
+                <RadioButton Style="{StaticResource MaterialDesignTabRadioButton}" Margin="10,5"
+                             Content="一括バッチ処理" 
+                             Command="{Binding NavigateCommand}" CommandParameter="BatchProcessingView"/>
+
+            </StackPanel>
+        </Border>
+
+        <ContentControl Grid.Row="1" Grid.Column="1" Margin="20"
+                        Content="{Binding CurrentView}" />
+
+        <StatusBar Grid.Row="2" Grid.ColumnSpan="2" Background="#EEEEEE" Height="45" Padding="15,0">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+
+            <StatusBarItem Grid.Column="0">
+                <TextBlock Text="{Binding Status.StatusMessage}" FontSize="14" FontWeight="Medium" />
+            </StatusBarItem>
+
+            <Separator Grid.Column="1" Style="{StaticResource MaterialDesignSeparator}" Margin="15,0" />
+
+            <StatusBarItem Grid.Column="2" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <Grid Visibility="{Binding Status.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <ProgressBar Grid.Column="0" 
+                                 Value="{Binding Status.ProgressValue}" Maximum="100" Height="18" 
+                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                 Background="Transparent" 
+                                 BorderThickness="0" />
+
+                    <TextBlock Grid.Column="1" 
+                               Text="{Binding Status.ProgressValue, StringFormat={}{0}%}" 
+                               Margin="10,0,0,0"
+                               VerticalAlignment="Center" FontSize="12" FontWeight="Bold"/>
+                </Grid>
+            </StatusBarItem>
+        </StatusBar>
+
+    </Grid>
+</Window>
