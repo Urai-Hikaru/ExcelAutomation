@@ -12,7 +12,7 @@ namespace ExcelAutomation.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "SalesHistory",
+                name: "sales_history",
                 columns: table => new
                 {
                     sales_date = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -27,7 +27,7 @@ namespace ExcelAutomation.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SalesHistory", x => new { x.sales_date, x.product_code });
+                    table.PrimaryKey("PK_sales_history", x => new { x.sales_date, x.product_code });
                 });
         }
 
@@ -35,7 +35,7 @@ namespace ExcelAutomation.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "SalesHistory");
+                name: "sales_history");
         }
     }
 }

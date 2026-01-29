@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExcelAutomation.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260116113735_InitialCreate")]
+    [Migration("20260129034913_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace ExcelAutomation.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.22");
 
-            modelBuilder.Entity("ExcelAutomation.Models.SalesHistory", b =>
+            modelBuilder.Entity("ExcelAutomation.Models.Entities.SalesHistory", b =>
                 {
                     b.Property<DateTime>("SalesDate")
                         .HasColumnType("TEXT")
@@ -62,7 +62,7 @@ namespace ExcelAutomation.Migrations
 
                     b.HasKey("SalesDate", "ProductCode");
 
-                    b.ToTable("SalesHistory");
+                    b.ToTable("sales_history");
                 });
 #pragma warning restore 612, 618
         }
