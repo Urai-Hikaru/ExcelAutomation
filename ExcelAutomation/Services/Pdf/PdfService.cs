@@ -1,22 +1,22 @@
 ﻿using System.Runtime.InteropServices;
-using Excel = Microsoft.Office.Interop.Excel;
+using InteropExcel = Microsoft.Office.Interop.Excel;
 
-namespace ExcelAutomation.Services
+namespace ExcelAutomation.Services.Pdf
 {
     public class PdfService
     {
         public void ExportToPdf(string inputExcelPath, string outputPdfPath)
         {
-            Excel.Application? excelApp = null;
-            Excel.Workbook? workbook = null;
+            InteropExcel.Application? excelApp = null;
+            InteropExcel.Workbook? workbook = null;
 
             try
             {
                 // Excelアプリケーションを起動（画面には表示しない）
-                excelApp = new Excel.Application
+                excelApp = new InteropExcel.Application
                 {
                     Visible = false,
-                    DisplayAlerts = false // 保存時の確認メッセージなどを抑制
+                    DisplayAlerts = false
                 };
 
                 // ブックを開く
@@ -24,9 +24,9 @@ namespace ExcelAutomation.Services
 
                 // PDFとしてエクスポート
                 workbook.ExportAsFixedFormat(
-                    Type: Excel.XlFixedFormatType.xlTypePDF,
+                    Type: InteropExcel.XlFixedFormatType.xlTypePDF,
                     Filename: outputPdfPath,
-                    Quality: Excel.XlFixedFormatQuality.xlQualityStandard,
+                    Quality: InteropExcel.XlFixedFormatQuality.xlQualityStandard,
                     IncludeDocProperties: true,
                     IgnorePrintAreas: false,
                     OpenAfterPublish: false
@@ -52,7 +52,6 @@ namespace ExcelAutomation.Services
                     Marshal.ReleaseComObject(excelApp);
                 }
 
-                // ガベージコレクションを強制実行してCOMオブジェクトを確実に解放
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }

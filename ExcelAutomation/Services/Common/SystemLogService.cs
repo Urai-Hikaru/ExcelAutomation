@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace ExcelAutomation.Services
+namespace ExcelAutomation.Services.Common
 {
     // ログレベルの定義
     public enum LogLevel
@@ -19,7 +19,7 @@ namespace ExcelAutomation.Services
         // ログファイルの保存先フォルダ（実行ファイル直下の Logs フォルダ）
         private readonly string _logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
 
-        // 排他制御用のロックオブジェクト（複数のスレッドから同時に書き込まれても大丈夫なようにする）
+        // 排他制御用のロックオブジェクト
         private static readonly object _lockObj = new object();
 
         private SystemLogService()
@@ -36,17 +36,17 @@ namespace ExcelAutomation.Services
         // ==========================================================
 
         /// <summary>
-        /// 情報ログを出力します
+        /// 情報ログを出力
         /// </summary>
         public void LogInfo(string message) => WriteLog(LogLevel.Info, message);
 
         /// <summary>
-        /// 警告ログを出力します
+        /// 警告ログを出力
         /// </summary>
         public void LogWarning(string message) => WriteLog(LogLevel.Warning, message);
 
         /// <summary>
-        /// エラーログを出力します（例外オブジェクト対応）
+        /// エラーログを出力
         /// </summary>
         public void LogError(Exception ex, string message = "エラーが発生しました")
         {
@@ -61,20 +61,19 @@ namespace ExcelAutomation.Services
 
         private void WriteLog(LogLevel level, string message)
         {
-            // ファイル名: App_20240116.log のように日付で分ける
+            // ファイル名は日付で分ける
             string fileName = $"App_{DateTime.Now:yyyyMMdd}.log";
             string filePath = Path.Combine(_logDirectory, fileName);
 
-            // ログのフォーマット: [2024-01-16 12:00:00] [Info] 処理を開始しました
+            // ログのフォーマット
             string logLine = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] {message}";
 
-            // ロックをかけて書き込む（他スレッドからの干渉を防ぐ）
+            // ロックをかけて書き込む
             lock (_lockObj)
             {
                 try
                 {
-                    // ファイルに追記 (Append)
-                    // エンコーディングはUTF-8
+                    // ファイルに追記
                     using (var sw = new StreamWriter(filePath, append: true, encoding: Encoding.UTF8))
                     {
                         sw.WriteLine(logLine);
@@ -83,7 +82,6 @@ namespace ExcelAutomation.Services
                 catch
                 {
                     // ログ出力自体のエラーは、アプリを止めないために握りつぶすか、デバッグ出力のみにする
-                    // System.Diagnostics.Debug.WriteLine("ログ書き込み失敗");
                 }
             }
         }

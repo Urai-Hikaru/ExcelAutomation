@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:data="clr-namespace:ExcelAutomation.Data"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1200"
         WindowStartupLocation="CenterScreen"
@@ -43,7 +44,8 @@
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
                     <materialDesign:PackIcon Kind="Bell" VerticalAlignment="Center" Margin="0,0,15,0" 
                                              Width="24" Height="24" ToolTip="更新通知" />
-                    <TextBlock Text="ログイン：管理者" VerticalAlignment="Center" Foreground="White" Margin="0,0,10,0"/>
+                    <TextBlock Text="{Binding Source={x:Static data:UserSession.Username}, StringFormat='ログイン：{0}'}" 
+                               VerticalAlignment="Center" Foreground="White" Margin="0,0,10,0"/>
                     <materialDesign:PackIcon Kind="AccountCircle" Width="30" Height="30" VerticalAlignment="Center"/>
                 </StackPanel>
             </DockPanel>
@@ -62,7 +64,8 @@
 
                 <RadioButton Style="{StaticResource MaterialDesignTabRadioButton}" Margin="10,5"
                              Content="一括バッチ処理" 
-                             Command="{Binding NavigateCommand}" CommandParameter="BatchProcessingView"/>
+                             Command="{Binding NavigateCommand}" CommandParameter="BatchProcessingView"
+                             Visibility="{Binding Source={x:Static data:UserSession.IsAdmin}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             </StackPanel>
         </Border>

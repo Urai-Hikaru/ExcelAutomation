@@ -1,5 +1,6 @@
 ﻿using ExcelAutomation.Data;
-using ExcelAutomation.Services;
+using ExcelAutomation.Services.Common;
+using ExcelAutomation.Views;
 using Microsoft.EntityFrameworkCore;
 using System.Windows;
 using System.Windows.Threading;
@@ -15,7 +16,9 @@ namespace ExcelAutomation
         {
             base.OnStartup(e);
 
-            // ログ機能の初期化（未処理例外の捕捉設定）
+            this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            // ログ機能の初期化
             SetupExceptionHandling();
 
             // アプリケーション起動ログ
@@ -23,39 +26,60 @@ namespace ExcelAutomation
 
             try
             {
-                // Dapperでアンダースコア付きカラム名(sales_date)を自動マッピングする設定
+                // Dapperでアンダースコア付きカラム名を自動マッピングする設定
                 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-                // アプリ起動時に、DBがなければ自動作成し、最新の状態にする
+                // アプリ起動時に、DBがなければ自動作成
                 using (var context = new AppDbContext())
                 {
                     context.Database.Migrate();
                 }
+
+                // ==============================================
+                // 3. ログイン画面の表示ロジック (ここを追加)
+                // ==============================================
+
+                // DB接続に成功したらログイン画面を表示
+                var loginWindow = new LoginWindow();
+
+                // ShowDialog() は画面が閉じるまで待機
+                bool? result = loginWindow.ShowDialog();
+
+                if (result == true)
+                {
+                    // ログイン成功 -> メイン画面を表示
+                    var mainWindow = new MainWindow();
+
+                    this.MainWindow = mainWindow;
+
+                    mainWindow.Show();
+
+                    this.ShutdownMode = ShutdownMode.OnMainWindowClose;
+                }
+                else
+                {
+                    // ログインキャンセル/失敗 -> アプリ終了
+                    SystemLogService.Instance.LogInfo("ログインがキャンセルされたため、終了します。");
+                    Current.Shutdown();
+                }
+                // ==============================================
             }
             catch (Exception ex)
             {
-                // DB接続やマイグレーションに失敗した場合
-                SystemLogService.Instance.LogError(ex, "データベースの初期化に失敗しました。アプリケーションを終了します。");
-
-                MessageBox.Show($"データベース接続エラーが発生しました。\nログファイルを確認してください。\n\n{ex.Message}",
-                                "Startup Error",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
-
-                // DBが使えないとアプリが動作しないため終了させる
+                SystemLogService.Instance.LogError(ex, "初期化エラー");
+                MessageBox.Show($"エラーが発生しました。\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 Current.Shutdown();
             }
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            // アプリケーション終了ログ
             SystemLogService.Instance.LogInfo("=== アプリケーションを終了しました ===");
             base.OnExit(e);
         }
 
         /// <summary>
-        /// 未処理の例外を捕捉する設定を行います
+        /// 未処理の例外を捕捉する設定
         /// </summary>
         private void SetupExceptionHandling()
         {
@@ -76,10 +100,6 @@ namespace ExcelAutomation
                             "System Error",
                             MessageBoxButton.OK,
                             MessageBoxImage.Error);
-
-            // trueにするとアプリの強制終了を防げるが、状態が不安定なため基本的には落とすか、慎重に判断する
-            // ここでは false (デフォルト) のままにして、エラー後にアプリを終了させる挙動とします
-            // e.Handled = true; 
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

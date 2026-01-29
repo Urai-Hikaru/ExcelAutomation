@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ExcelAutomation.Models
+namespace ExcelAutomation.Models.Entities
 {
-    [Table("SalesHistory")]
+    [Table("sales_history")]
     [PrimaryKey(nameof(SalesDate), nameof(ProductCode))]
     public class SalesHistory
     {

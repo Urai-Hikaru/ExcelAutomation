@@ -1,11 +1,11 @@
-﻿using ExcelAutomation.Models;
+﻿using ExcelAutomation.Models.Entities;
 using ExcelAutomation.ViewModels;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Excel = Microsoft.Office.Interop.Excel;
+using InteropExcel = Microsoft.Office.Interop.Excel;
 
-namespace ExcelAutomation.Services
+namespace ExcelAutomation.Services.Excel
 {
     public class ExcelService
     {
@@ -14,23 +14,23 @@ namespace ExcelAutomation.Services
         }
 
         /// <summary>
-        /// 月次集計データをExcelファイルとして出力します
+        /// 月次集計データをExcelファイルとして出力
         /// </summary>
         public void CreateMonthlyReport(string savePath, List<MonthlySummaryModel> data, DateTime targetMonth)
         {
-            Excel.Application? excelApp = null;
-            Excel.Workbook? workbook = null;
-            Excel.Worksheet? sheet = null;
-            Excel.Range? titleRange = null;
-            Excel.Range? headerRange = null;
-            Excel.Range? dataRange = null;
-            Excel.Range? finalRange = null;
+            InteropExcel.Application? excelApp = null;
+            InteropExcel.Workbook? workbook = null;
+            InteropExcel.Worksheet? sheet = null;
+            InteropExcel.Range? titleRange = null;
+            InteropExcel.Range? headerRange = null;
+            InteropExcel.Range? dataRange = null;
+            InteropExcel.Range? finalRange = null;
 
             try
             {
-                excelApp = new Excel.Application { Visible = false, DisplayAlerts = false };
+                excelApp = new InteropExcel.Application { Visible = false, DisplayAlerts = false };
                 workbook = excelApp.Workbooks.Add();
-                sheet = (Excel.Worksheet)workbook.Sheets[1];
+                sheet = (InteropExcel.Worksheet)workbook.Sheets[1];
                 sheet.Name = $"{targetMonth.Month}月集計";
 
                 object[,] values = new object[data.Count, 3];
@@ -47,7 +47,7 @@ namespace ExcelAutomation.Services
                 titleRange.Merge();
                 titleRange.Font.Size = 14;
                 titleRange.Font.Bold = true;
-                titleRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+                titleRange.HorizontalAlignment = InteropExcel.XlHAlign.xlHAlignCenter;
 
                 string[] headers = { "商品コード", "合計数量", "合計金額" };
                 for (int col = 0; col < headers.Length; col++)
@@ -58,22 +58,22 @@ namespace ExcelAutomation.Services
                 headerRange = sheet.Range["A2", "C2"];
                 headerRange.Interior.Color = System.Drawing.Color.LightGray;
                 headerRange.Font.Bold = true;
-                headerRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+                headerRange.HorizontalAlignment = InteropExcel.XlHAlign.xlHAlignCenter;
 
                 if (data.Count > 0)
                 {
-                    Excel.Range startCell = sheet.Cells[3, 1];
-                    Excel.Range endCell = sheet.Cells[3 + data.Count - 1, 3];
+                    InteropExcel.Range startCell = sheet.Cells[3, 1];
+                    InteropExcel.Range endCell = sheet.Cells[3 + data.Count - 1, 3];
                     dataRange = sheet.Range[startCell, endCell];
                     dataRange.Value2 = values;
 
                     finalRange = sheet.Range["A2", endCell];
-                    finalRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                    finalRange.Borders.LineStyle = InteropExcel.XlLineStyle.xlContinuous;
 
-                    Excel.Range qtyCol = sheet.Range[sheet.Cells[3, 2], endCell];
+                    InteropExcel.Range qtyCol = sheet.Range[sheet.Cells[3, 2], endCell];
                     qtyCol.NumberFormat = "#,##0";
 
-                    Excel.Range priceCol = sheet.Range[sheet.Cells[3, 3], endCell];
+                    InteropExcel.Range priceCol = sheet.Range[sheet.Cells[3, 3], endCell];
                     priceCol.NumberFormat = "#,##0";
                 }
 
@@ -116,8 +116,7 @@ namespace ExcelAutomation.Services
         }
 
         /// <summary>
-        /// Excelファイルから売上データを読み込みます
-        /// (以前はprivateでしたが、ViewModelから呼ぶためにpublicに変更しました)
+        /// Excelファイルから売上データを読み込み
         /// </summary>
         public List<SalesHistory> ReadSalesFile(string filePath, string fileName)
         {
@@ -134,18 +133,18 @@ namespace ExcelAutomation.Services
             }
 
             var list = new List<SalesHistory>();
-            Excel.Application? excelApp = null;
-            Excel.Workbook? workbook = null;
-            Excel.Worksheet? sheet = null;
+            InteropExcel.Application? excelApp = null;
+            InteropExcel.Workbook? workbook = null;
+            InteropExcel.Worksheet? sheet = null;
             DateTime now = DateTime.Now;
 
             try
             {
-                excelApp = new Excel.Application { Visible = false };
+                excelApp = new InteropExcel.Application { Visible = false };
                 workbook = excelApp.Workbooks.Open(filePath);
-                sheet = (Excel.Worksheet)workbook.Sheets[1];
+                sheet = (InteropExcel.Worksheet)workbook.Sheets[1];
 
-                Excel.Range usedRange = sheet.UsedRange;
+                InteropExcel.Range usedRange = sheet.UsedRange;
                 object[,] values = (object[,])usedRange.Value2;
 
                 for (int i = 2; i <= values.GetLength(0); i++)

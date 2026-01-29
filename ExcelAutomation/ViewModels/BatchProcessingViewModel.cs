@@ -1,6 +1,9 @@
 ﻿using ExcelAutomation.Commands;
 using ExcelAutomation.Models;
 using ExcelAutomation.Services;
+using ExcelAutomation.Services.Common;
+using ExcelAutomation.Services.Excel;
+using ExcelAutomation.Services.Pdf;
 using MaterialDesignThemes.Wpf;
 using System.Collections.ObjectModel;
 using System.Configuration;
@@ -12,7 +15,7 @@ using System.Windows.Input;
 
 namespace ExcelAutomation.ViewModels
 {
-    public class BatchProcessingViewModel : ViewModelBase
+    public class BatchProcessingViewModel : BaseViewModel
     {
         // ==========================================================
         // プロパティ定義
@@ -70,7 +73,6 @@ namespace ExcelAutomation.ViewModels
 
                 if (!targetFiles.Any())
                 {
-                    // ログ記録
                     SystemLogService.Instance.LogInfo("バッチ処理中断: 処理対象ファイルが選択されていません");
                     MessageQueue.Enqueue("処理対象のファイルが選択されていません。");
                     return;
@@ -107,7 +109,6 @@ namespace ExcelAutomation.ViewModels
 
                             if (!DateTime.TryParseExact(fileNameOnly, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
                             {
-                                // 日付エラーはWarningとして記録
                                 SystemLogService.Instance.LogWarning($"ファイル名日付形式エラー: {file.FileName}");
                                 invalidFiles.Add(file.FileName);
                                 continue;
@@ -117,10 +118,9 @@ namespace ExcelAutomation.ViewModels
                             {
                                 await Task.Run(() =>
                                 {
-                                    // 1. ExcelServiceを使ってデータ読み込み
+                                    // Excelファイル読み込み
                                     var dataList = excelService.ReadSalesFile(file.FilePath, file.FileName);
 
-                                    // 2. データがあればDBに一括登録
                                     if (dataList.Count > 0)
                                     {
                                         salesService.RegisterSalesBatch(dataList);
@@ -130,7 +130,6 @@ namespace ExcelAutomation.ViewModels
                             }
                             catch (Exception ex)
                             {
-                                // 個別ファイルのエラーログ
                                 SystemLogService.Instance.LogError(ex, $"売上登録処理エラー: {file.FileName}");
 
                                 MessageQueue.Enqueue($"エラー: {file.FileName} - {ex.Message}", "OK", () => { });
@@ -178,13 +177,13 @@ namespace ExcelAutomation.ViewModels
                             {
                                 await Task.Run(() =>
                                 {
+                                    // PDF出力処理
                                     pdfService.ExportToPdf(file.FilePath, pdfPath);
                                 });
                                 successCountInvoice++;
                             }
                             catch (Exception ex)
                             {
-                                // 個別ファイルのエラーログ
                                 SystemLogService.Instance.LogError(ex, $"PDF作成処理エラー: {file.FileName}");
 
                                 MessageQueue.Enqueue($"PDF作成失敗: {file.FileName}", "詳細", () => MessageBox.Show(ex.Message));

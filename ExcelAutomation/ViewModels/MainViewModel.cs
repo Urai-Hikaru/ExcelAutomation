@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ExcelAutomation.Services;
+using ExcelAutomation.Services.Common;
 using System.Windows.Input;
 
 namespace ExcelAutomation.ViewModels
@@ -16,7 +16,7 @@ namespace ExcelAutomation.ViewModels
         // ログサービスへの参照
         public SystemLogService SystemLog { get; } = SystemLogService.Instance;
 
-        public ViewModelBase? CurrentView => Navigation.CurrentView;
+        public BaseViewModel? CurrentView => Navigation.CurrentView;
 
         public ICommand NavigateCommand { get; }
 

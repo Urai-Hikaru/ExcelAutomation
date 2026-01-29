@@ -1,6 +1,8 @@
 ﻿using ExcelAutomation.Commands;
-using ExcelAutomation.Models;
+using ExcelAutomation.Models.Entities;
 using ExcelAutomation.Services;
+using ExcelAutomation.Services.Common;
+using ExcelAutomation.Services.Excel;
 using MaterialDesignThemes.Wpf;
 using System.Collections.ObjectModel;
 using System.Configuration;
@@ -11,7 +13,7 @@ using System.Windows.Input;
 
 namespace ExcelAutomation.ViewModels
 {
-    public class DataProcessingViewModel : ViewModelBase
+    public class DataProcessingViewModel : BaseViewModel
     {
         private readonly SalesService _salesService = new SalesService();
 
@@ -67,7 +69,6 @@ namespace ExcelAutomation.ViewModels
         {
             try
             {
-                // ログ記録
                 SystemLogService.Instance.LogInfo($"データ検索を開始します。対象日: {TargetDate:yyyy/MM/dd}");
 
                 StatusService.Instance.Start("データを検索中...");
@@ -94,7 +95,6 @@ namespace ExcelAutomation.ViewModels
             }
             catch (Exception ex)
             {
-                // エラーログ記録
                 SystemLogService.Instance.LogError(ex, "データ検索処理でエラーが発生しました");
 
                 MessageQueue.Enqueue("検索中にエラーが発生しました", "詳細", () => MessageBox.Show(ex.Message));
@@ -109,7 +109,6 @@ namespace ExcelAutomation.ViewModels
         {
             try
             {
-                // ログ記録
                 SystemLogService.Instance.LogInfo($"Excel出力を開始します。対象月: {TargetDate:yyyy/MM}");
 
                 StatusService.Instance.Start("Excel出力中...");
@@ -161,7 +160,6 @@ namespace ExcelAutomation.ViewModels
             }
             catch (Exception ex)
             {
-                // エラーログ記録
                 SystemLogService.Instance.LogError(ex, "Excel出力処理でエラーが発生しました");
 
                 MessageQueue.Enqueue("Excel出力中にエラーが発生しました", "詳細", () => MessageBox.Show(ex.Message));

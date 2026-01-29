@@ -1,9 +1,9 @@
 ﻿using ExcelAutomation.ViewModels;
 
-namespace ExcelAutomation.Services
+namespace ExcelAutomation.Services.Common
 {
     // アプリ全体で共有する状態管理クラス
-    public class StatusService : ViewModelBase
+    public class StatusService : BaseViewModel
     {
         // シングルトン
         public static StatusService Instance { get; } = new StatusService();

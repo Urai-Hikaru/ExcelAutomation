@@ -4,8 +4,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:ExcelAutomation"
              xmlns:vm="clr-namespace:ExcelAutomation.ViewModels" 
-             xmlns:v="clr-namespace:ExcelAutomation.Views"
-             StartupUri="MainWindow.xaml">
+             xmlns:v="clr-namespace:ExcelAutomation.Views">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

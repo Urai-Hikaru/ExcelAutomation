@@ -6,7 +6,7 @@ namespace ExcelAutomation.ViewModels
     /// <summary>
     /// 全てのViewModelの基底クラス
     /// </summary>
-    public class ViewModelBase : INotifyPropertyChanged
+    public class BaseViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
